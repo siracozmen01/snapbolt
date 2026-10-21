@@ -1,0 +1,55 @@
+# Testing Snapbolt
+
+Automated tests cover the logic (see [conventions/testing.md](conventions/testing.md)). Screen
+capture, the overlay and system integration need the Screen Recording permission and real displays,
+so they are checked by hand with the list below before every release and in any PR that touches
+`SnapboltCapture`, `SnapboltOverlay`, `SnapboltSystem` or the app target.
+
+## Automated
+
+```bash
+make test     # package tests
+make lint     # SwiftLint + swift-format
+```
+
+## Manual checklist
+
+Copy the relevant sections into the PR description and tick them.
+
+### Capture and overlay
+
+- [ ] ⌥⇧4 shows the frozen overlay on every display; the frozen image matches the moment of the key press.
+- [ ] Dragging selects a region; the size label shows pixels; the magnifier follows the cursor.
+- [ ] Hovering highlights the window under the cursor; clicking selects exactly that window's frame.
+- [ ] Return selects the display under the cursor; Escape closes the overlay with no notification.
+- [ ] Pressing ⌥⇧4 again while the overlay is open does nothing.
+- [ ] ⌥⇧3 captures the display under the cursor without an overlay.
+
+### Games (the reason Snapbolt exists)
+
+- [ ] Minecraft, windowed, in game (cursor locked): ⌥⇧4 shows the overlay and the cursor moves freely.
+- [ ] Minecraft, native full screen: same as above; the overlay appears on top of the game's space.
+- [ ] After capturing, returning to the game works normally.
+
+### Displays
+
+- [ ] Retina display alone: crop matches the selection pixel for pixel.
+- [ ] Retina + non-Retina external display: regions on both displays crop correctly.
+- [ ] External display positioned left of and above the main display.
+
+### Upload and results
+
+- [ ] Configured R2: link is on the clipboard, opens the image, notification click opens it too.
+- [ ] Storage not configured: image is on the clipboard and saved locally; notification offers settings.
+- [ ] Wrong secret key: notification explains invalid credentials; image is on the clipboard.
+- [ ] Network off: retries, then fails with a network message; image is on the clipboard.
+- [ ] Recent Uploads menu lists the last 10; clicking copies the link.
+
+### Settings and permissions
+
+- [ ] Test Connection reports success with valid settings and a specific message for: wrong endpoint,
+      wrong key, missing bucket, unreachable public URL.
+- [ ] First launch without permissions shows onboarding; granting Screen Recording and relaunching works.
+- [ ] Revoking Screen Recording while running: next capture explains and links to System Settings.
+- [ ] Changing a shortcut in settings takes effect immediately.
+- [ ] Launch at login toggles correctly.

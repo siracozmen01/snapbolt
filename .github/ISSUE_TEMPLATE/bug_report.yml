@@ -1,0 +1,51 @@
+name: Bug report
+description: Something does not work as expected
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Press ⌥⇧4
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Snapbolt version
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "15.3"
+    validations:
+      required: true
+  - type: textarea
+    id: displays
+    attributes:
+      label: Display setup
+      description: Number of displays, which are Retina, how they are arranged.
+  - type: input
+    id: storage
+    attributes:
+      label: Storage provider
+      placeholder: Cloudflare R2, AWS S3, MinIO, not configured…
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Optional. In Terminal: `log show --last 5m --predicate 'subsystem == "io.github.siracozmen01.Snapbolt"' --info`
+        Check the output for anything private before pasting.
+      render: text

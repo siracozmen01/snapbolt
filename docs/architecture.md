@@ -1,0 +1,144 @@
+# Architecture
+
+This document describes how Snapbolt is structured and why. It is kept up to date with the code:
+a change that adds a module, moves a responsibility or changes a dependency rule updates this file
+in the same pull request.
+
+## Big picture
+
+Snapbolt is a menu bar app (no Dock icon). All real code lives in a local Swift package,
+`Packages/SnapboltKit`, split into small modules with one responsibility each. The Xcode app target
+in `App/` is thin: it builds the concrete objects, wires them together and shows the menu bar.
+
+```
+Snapbolt/
+├── project.yml                 # XcodeGen spec (the .xcodeproj is generated, never committed)
+├── Makefile                    # bootstrap, project, build, test, lint, format
+├── App/                        # app target: composition root + menu bar
+│   ├── SnapboltApp.swift
+│   ├── AppEnvironment.swift    # builds and wires concrete dependencies
+│   ├── MenuBar/
+│   └── Resources/              # Info.plist, entitlements, assets
+├── Packages/SnapboltKit/
+│   ├── Package.swift           # module graph — the dependency rules live here
+│   ├── Sources/
+│   │   ├── SnapboltCore/
+│   │   ├── SnapboltCapture/
+│   │   ├── SnapboltOverlay/
+│   │   ├── SnapboltUpload/
+│   │   ├── SnapboltSettings/
+│   │   ├── SnapboltHotkeys/
+│   │   ├── SnapboltHistory/
+│   │   ├── SnapboltSystem/
+│   │   └── SnapboltWorkflow/
+│   └── Tests/                  # <Module>Tests, one per module
+└── docs/
+```
+
+## Modules
+
+| Module | Responsibility | Does not |
+|---|---|---|
+| `SnapboltCore` | Domain types (`FrozenScreens`, `Selection`, `CapturedImage`, `UploadResult`, …), the protocols every feature implements, pure geometry and cropping. | Import AppKit, SwiftUI or any Snapbolt module. |
+| `SnapboltCapture` | Freeze-frame screenshots of displays via ScreenCaptureKit, the on-screen window list, PNG encoding. | Show UI. |
+| `SnapboltOverlay` | The selection UI drawn over frozen images: region drag, window highlight, magnifier, keyboard handling. | Capture or upload anything. |
+| `SnapboltUpload` | S3-compatible client: SigV4 signing, object `PUT`/`GET`/`DELETE`, connection test, error mapping. | Know where the bytes came from. |
+| `SnapboltSettings` | Preferences model, Keychain access for secrets, settings and onboarding UI. | Perform uploads; the connection test is injected. |
+| `SnapboltHotkeys` | Global shortcut registration and the shortcut recorder control. | Decide what a shortcut does. |
+| `SnapboltHistory` | Persisting and reading the last 10 uploads. | Touch the clipboard or UI. |
+| `SnapboltSystem` | Thin adapters over macOS services: pasteboard, notifications, file writing, opening URLs, launch at login, permission status. | Contain business logic. |
+| `SnapboltWorkflow` | The capture pipeline: freeze → select → crop → encode → save → upload → clipboard → notify. Maps errors to user-facing messages. | Import any module except Core. |
+| App target | Composition root and menu bar. | Contain logic worth testing — move it into a module. |
+
+`SnapboltTestSupport` is a test-only target with shared fakes (`FakeUploader`, `SpyClipboard`, …).
+It depends on `SnapboltCore` and is used only by test targets.
+
+Phase 2 adds `SnapboltEditor`; Phase 3 adds `SnapboltRecording`. Both follow the same rules.
+
+## Dependency rules
+
+```
+                 ┌──────────────► SnapboltCore ◄──────────────┐
+                 │                     ▲                       │
+App ──► SnapboltWorkflow ──────────────┘          Capture, Overlay, Upload, Settings,
+ │                                                Hotkeys, History, System
+ └──────────────────────────────────────────────► (constructed by the App target only)
+```
+
+1. **Core is the bottom.** `SnapboltCore` depends on no other Snapbolt module.
+2. **Features are siblings that never meet.** A feature module depends only on `SnapboltCore`.
+   `SnapboltUpload` cannot import `SnapboltCapture`, and so on.
+3. **The workflow talks in protocols.** `SnapboltWorkflow` depends only on `SnapboltCore`; it
+   receives implementations through its initializer.
+4. **Only the App target knows concrete types.** It is the single place where `ScreenCaptureKitCapturer`,
+   `S3Uploader`, etc. are instantiated.
+5. **The compiler enforces this.** `Package.swift` lists exactly these dependencies. Adding a
+   dependency between modules requires changing this document and, if it breaks a rule above, an ADR.
+
+Third-party packages are allowed only per [ADR 0006](adr/0006-dependency-policy-and-keyboardshortcuts.md)
+and are imported by exactly one wrapper module.
+
+## How a feature plugs in
+
+1. Define the protocol (and the types it needs) in `SnapboltCore`, e.g.
+
+   ```swift
+   public protocol Uploading: Sendable {
+       func upload(_ file: EncodedImage, using settings: StorageSettings) async throws -> UploadResult
+   }
+   ```
+
+2. Implement it in a feature module (`S3Uploader` in `SnapboltUpload`).
+3. Use it from `SnapboltWorkflow` through the protocol.
+4. Construct the concrete type in `App/AppEnvironment.swift` and pass it in.
+5. Test the workflow with a fake (`FakeUploader`) — no real implementation needed.
+
+## When one feature's UI needs another feature
+
+Some screens show things owned by several modules. The settings window has storage fields
+(`SnapboltSettings`), a shortcut recorder (`SnapboltHotkeys`), a "Test Connection" button
+(`SnapboltUpload`) and a launch-at-login toggle (`SnapboltSystem`). Feature modules still never
+import each other:
+
+- **Behaviour crosses modules through Core protocols.** `SnapboltSettings` receives a
+  `ConnectionTesting`, `PermissionChecking` and `LaunchAtLoginControlling` through its initializers;
+  the App target passes the concrete implementations.
+- **Views cross modules through composition in the App target.** Each module provides its own pane
+  (`StorageSettingsView`, `GeneralSettingsView`, `ShortcutsSettingsView`); the App target assembles
+  them into the settings window's tabs.
+
+## Coordinate spaces
+
+Coordinate bugs are the most likely source of defects, so the spaces are named explicitly in code:
+
+| Space | Origin | Unit | Used by |
+|---|---|---|---|
+| Global points | Bottom-left of the primary display, y up | points | `NSScreen.frame`, `NSEvent.mouseLocation` |
+| Display points | Bottom-left of one display, y up | points | Overlay view drawing |
+| Display pixels | **Top-left** of one display, y down | pixels | Frozen `CGImage`, `Selection` rects, cropping |
+| SCK frames | Top-left of the primary display, y down | points | `SCWindow.frame`, `SCDisplay.frame` |
+
+All conversions live in `SnapboltCore/Geometry` as pure functions with unit tests. Code outside that
+folder never converts coordinates by hand.
+
+## Concurrency model
+
+- Swift 6 language mode with complete strict concurrency checking.
+- UI types (overlay, menu bar, settings views) are `@MainActor`.
+- Capture, encoding and network work are `async` and do not run on the main actor.
+- Domain types in Core are value types and `Sendable`.
+- See [conventions/concurrency.md](conventions/concurrency.md).
+
+## Data on disk
+
+| Data | Location |
+|---|---|
+| Preferences | `UserDefaults` (app domain) |
+| Secret Access Key | Keychain, service `io.github.siracozmen01.Snapbolt.storage` |
+| Upload history | `~/Library/Application Support/Snapbolt/history.json` |
+| Local captures | `~/Pictures/Snapbolt/YYYY-MM/` (configurable) |
+
+## Decisions
+
+Significant decisions are recorded as ADRs in [docs/adr](adr/). Read them before proposing a change
+to the structure above.
