@@ -26,6 +26,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeys.start()
         self.hotkeys = hotkeys
         Task { await menuBar?.refreshRecentUploads() }
+        #if DEBUG
+            // Lets a developer start a capture from Terminal while debugging; never compiled into releases.
+            DistributedNotificationCenter.default().addObserver(
+                forName: Notification.Name("io.github.siracozmen01.Snapbolt.debugCapture"), object: nil, queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.capture(.region) }
+            }
+        #endif
         if !environment.permissions.hasScreenRecordingPermission() {
             onboardingWindow.show(permissions: environment.permissions) { [weak self] in
                 self?.showSettings(tab: .storage)

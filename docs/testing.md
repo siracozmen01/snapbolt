@@ -12,6 +12,21 @@ make test     # package tests
 make lint     # SwiftLint + swift-format
 ```
 
+## Debugging a capture
+
+Snapbolt logs each step of a capture under the subsystem `io.github.siracozmen01.Snapbolt`:
+
+```bash
+/usr/bin/log stream --info --debug --predicate 'subsystem == "io.github.siracozmen01.Snapbolt"'
+```
+
+Use the full path: in zsh, `log` is a shell builtin. Debug builds also start a region capture when
+they receive a distributed notification, so a capture can be triggered from Terminal:
+
+```bash
+swift -e 'import Foundation; DistributedNotificationCenter.default().postNotificationName(.init("io.github.siracozmen01.Snapbolt.debugCapture"), object: nil, userInfo: nil, deliverImmediately: true)'
+```
+
 ## Manual checklist
 
 Copy the relevant sections into the PR description and tick them.

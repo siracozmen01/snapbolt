@@ -20,7 +20,11 @@ public final class CaptureWorkflow {
 
     /// Runs a capture. Returns when the capture is finished, cancelled or has failed.
     public func run(_ mode: CaptureMode) async {
-        guard !isSelecting else { return }
+        guard !isSelecting else {
+            logger.info("Ignoring \(String(describing: mode), privacy: .public) capture: selection already open")
+            return
+        }
+        logger.info("Starting \(String(describing: mode), privacy: .public) capture")
         let capturedAt = dependencies.now()
         let encoded: EncodedImage
         do {
@@ -45,7 +49,11 @@ public final class CaptureWorkflow {
             isSelecting = true
             defer { isSelecting = false }
             let screens = try await dependencies.capturer.freezeDisplays(.allDisplays)
-            guard let selection = await dependencies.selector.select(on: screens) else { return nil }
+            logger.info("Froze \(screens.displays.count) display(s), \(screens.windows.count) window(s)")
+            guard let selection = await dependencies.selector.select(on: screens) else {
+                logger.info("Selection cancelled")
+                return nil
+            }
             return try ImageCropper.crop(screens, to: selection)
         }
     }

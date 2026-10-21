@@ -26,4 +26,11 @@ struct OverlayPanelTests {
         #expect(panel.collectionBehavior.contains(.fullScreenAuxiliary))
         #expect(panel.canBecomeKey)
     }
+
+    @Test("The panel shows and takes keys even when macOS declines to activate Snapbolt")
+    func doesNotNeedAppActivation() {
+        let panel = OverlayPanel(display: .fixture()) { _ in }
+
+        #expect(panel.styleMask.contains(.nonactivatingPanel))
+    }
 }

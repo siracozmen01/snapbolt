@@ -18,13 +18,20 @@ public final class OverlayController: SelectionPresenting {
         self.screens = screens
         tracker = SelectionTracker(windows: screens.windows)
         panels = screens.displays.map { OverlayPanel(display: $0) { [weak self] in self?.handle($0) } }
-        // Activating Snapbolt takes focus from the frontmost app; games then release the cursor.
+        // Taking focus from the frontmost app makes games release the cursor. macOS may decline this
+        // activation; the panels are non-activating, so they still appear and receive keys.
         NSApp.activate()
         for panel in panels {
             panel.orderFrontRegardless()
         }
         keyPanel(at: NSEvent.mouseLocation)?.makeKey()
         handle(.moved(NSEvent.mouseLocation))
+        for panel in panels {
+            let frame = String(describing: panel.frame)
+            logger.debug("Overlay panel frame=\(frame, privacy: .public) visible=\(panel.isVisible)")
+            logger.debug("Overlay key=\(panel.isKeyWindow) appActive=\(NSApp.isActive)")
+            logger.debug("Overlay activeSpace=\(panel.isOnActiveSpace) occlusion=\(panel.occlusionState.rawValue)")
+        }
         return await withCheckedContinuation { continuation = $0 }
     }
 
@@ -64,6 +71,7 @@ public final class OverlayController: SelectionPresenting {
     }
 
     private func finish(_ selection: Selection?) {
+        logger.info("Overlay finished: \(selection == nil ? "cancelled" : "selected", privacy: .public)")
         for panel in panels {
             panel.orderOut(nil)
         }
