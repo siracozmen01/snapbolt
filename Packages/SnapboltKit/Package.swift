@@ -18,7 +18,8 @@ let featureModules = [
 
 /// Feature modules that have a `<Module>Tests` target. Each plan task adds its module here.
 let testedModules = [
-    "SnapboltWorkflow"
+    "SnapboltWorkflow",
+    "SnapboltUpload",
 ]
 
 let package = Package(
