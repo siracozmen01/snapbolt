@@ -1,0 +1,39 @@
+import Foundation
+import SnapboltCapture
+import SnapboltCore
+import SnapboltHistory
+import SnapboltOverlay
+import SnapboltSettings
+import SnapboltSystem
+import SnapboltUpload
+import SnapboltWorkflow
+
+/// The composition root: the only place that creates concrete implementations and wires them together.
+@MainActor
+final class AppEnvironment {
+    let settingsStore = SettingsStore()
+    let permissions = ScreenRecordingPermissionChecker()
+    let history = HistoryStore(fileURL: HistoryStore.defaultFileURL)
+    let launchAtLogin = LaunchAtLoginController()
+    let connectionTester = S3ConnectionTester()
+    let clipboard = PasteboardClipboard()
+    let notifier: UserNotificationNotifier
+    let workflow: CaptureWorkflow
+
+    init(onRecovery: @escaping @MainActor @Sendable (Recovery) -> Void) {
+        notifier = UserNotificationNotifier(onRecovery: onRecovery)
+        workflow = CaptureWorkflow(
+            dependencies: CaptureWorkflow.Dependencies(
+                capturer: ScreenCaptureKitCapturer(),
+                selector: OverlayController(),
+                encoder: PNGEncoder(),
+                saver: LocalCaptureFileSaver(),
+                uploader: S3Uploader(),
+                settings: settingsStore,
+                clipboard: clipboard,
+                notifier: notifier,
+                history: history
+            )
+        )
+    }
+}
