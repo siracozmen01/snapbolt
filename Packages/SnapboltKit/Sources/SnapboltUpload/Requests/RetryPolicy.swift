@@ -17,10 +17,12 @@ struct RetryPolicy: Sendable {
         for delay in delays {
             do {
                 return try await operation()
-            } catch  where Self.isRetryable(error) {
-                try Task.checkCancellation()
-                try await sleep(delay)
+            } catch {
+                // Not `catch where`: Swift 6.3 crashes compiling that form here (MandatoryAllocBoxToStack).
+                guard Self.isRetryable(error) else { throw error }
             }
+            try Task.checkCancellation()
+            try await sleep(delay)
         }
         return try await operation()
     }
