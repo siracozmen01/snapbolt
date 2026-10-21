@@ -71,6 +71,11 @@ public struct SettingsStore: SettingsProviding {
 
     /// The local-copy preferences; by default copies are saved to `~/Pictures/Snapbolt`.
     public func capturePreferences() async -> CapturePreferences {
+        currentCapturePreferences()
+    }
+
+    /// The local-copy preferences, read synchronously for views.
+    public func currentCapturePreferences() -> CapturePreferences {
         let saveLocally = defaults.object(forKey: Key.saveLocally) as? Bool ?? true
         let folder = defaults.string(forKey: Key.folderPath).map { URL(filePath: $0) }
         return CapturePreferences(
