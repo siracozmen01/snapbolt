@@ -15,6 +15,7 @@ public struct OnboardingView: View {
             Text("Welcome to Snapbolt").font(.largeTitle.bold())
             Text("Snapbolt needs two permissions to capture your screen and tell you when a link is ready.")
                 .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             ScreenRecordingStepView(model: model)
             NotificationsStepView(model: model)
             HStack {

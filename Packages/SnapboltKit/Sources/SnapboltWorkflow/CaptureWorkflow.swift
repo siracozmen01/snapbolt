@@ -31,8 +31,7 @@ public final class CaptureWorkflow {
             guard let image = try await capture(mode) else { return }
             encoded = try await Self.encode(image, with: dependencies.encoder)
         } catch {
-            logger.error("Capture failed: \(String(describing: error), privacy: .public)")
-            await dependencies.notifier.notify(ErrorPresenter.present(error))
+            await report(error, during: "Capture")
             return
         }
         await saveLocalCopy(encoded, capturedAt: capturedAt)
@@ -64,14 +63,14 @@ public final class CaptureWorkflow {
         do {
             try await Self.save(image, capturedAt: capturedAt, in: preferences.folder, with: dependencies.saver)
         } catch {
-            logger.error("Saving the local copy failed: \(String(describing: error), privacy: .private)")
-            await dependencies.notifier.notify(ErrorPresenter.present(error))
+            await report(error, during: "Saving the local copy")
         }
     }
 
     private func uploadAndCopyLink(_ image: EncodedImage) async {
         do {
             guard let settings = try await dependencies.settings.storageSettings() else {
+                logger.info("Storage is not configured; copying the image instead")
                 dependencies.clipboard.writeImage(image)
                 await dependencies.notifier.notify(ErrorPresenter.notConfigured)
                 return
@@ -81,9 +80,8 @@ public final class CaptureWorkflow {
             await recordInHistory(result)
             await dependencies.notifier.notifyLinkCopied(result.publicURL)
         } catch {
-            logger.error("Upload failed: \(String(describing: error), privacy: .private)")
             dependencies.clipboard.writeImage(image)
-            await dependencies.notifier.notify(ErrorPresenter.present(error))
+            await report(error, during: "Upload")
         }
     }
 
@@ -95,6 +93,13 @@ public final class CaptureWorkflow {
             // The link is already on the clipboard; a missing history entry is not worth interrupting the user.
             logger.error("Recording the upload in history failed: \(String(describing: error), privacy: .public)")
         }
+    }
+
+    private func report(_ error: any Error, during step: String) async {
+        let presented = ErrorPresenter.present(error)
+        // The user-facing message names the cause (status code, S3 error code) without URLs or secrets.
+        logger.error("\(step, privacy: .public) failed: \(presented.message, privacy: .public)")
+        await dependencies.notifier.notify(presented)
     }
 
     // Encoding and file writes are CPU and disk work; being nonisolated keeps them off the main actor.
