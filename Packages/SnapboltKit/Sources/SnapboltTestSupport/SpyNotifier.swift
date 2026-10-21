@@ -1,4 +1,5 @@
 // swift-format-ignore-file: AllPublicDeclarationsHaveDocumentation
+
 // Test doubles are documented by their type comment; per-member docs would only repeat the protocol.
 import Foundation
 import SnapboltCore

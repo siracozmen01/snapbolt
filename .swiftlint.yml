@@ -54,6 +54,10 @@ line_length:
   ignores_urls: true
   ignores_comments: false
 
+# swift-format puts the brace of a multi-line signature on its own line; accept that shape.
+opening_brace:
+  ignore_multiline_function_signatures: true
+
 large_tuple:
   warning: 2
   error: 3

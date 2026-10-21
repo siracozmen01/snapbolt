@@ -16,6 +16,11 @@ let featureModules = [
     "SnapboltWorkflow",
 ]
 
+/// Feature modules that have a `<Module>Tests` target. Each plan task adds its module here.
+let testedModules = [
+    "SnapboltWorkflow"
+]
+
 let package = Package(
     name: "SnapboltKit",
     platforms: [.macOS(.v15)],
@@ -33,6 +38,8 @@ let package = Package(
         .target(name: "SnapboltHotkeys", dependencies: [core, "KeyboardShortcuts"]),
         .target(name: "SnapboltTestSupport", dependencies: [core]),
         .testTarget(name: "SnapboltCoreTests", dependencies: [core, testSupport]),
-    ] + featureModules.map { .target(name: $0, dependencies: [core]) },
+    ]
+        + featureModules.map { .target(name: $0, dependencies: [core]) }
+        + testedModules.map { .testTarget(name: "\($0)Tests", dependencies: [.byName(name: $0), core, testSupport]) },
     swiftLanguageModes: [.v6]
 )

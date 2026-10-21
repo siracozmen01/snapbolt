@@ -33,8 +33,8 @@ public enum ConnectionTestFailure: Equatable, Sendable {
         case .network:
             String(localized: "Could not connect. Check your internet connection.")
         case .unexpected(let statusCode, let code):
-            code.map { String(localized: "Unexpected response: HTTP \(statusCode) (\($0)).") }
-                ?? String(localized: "Unexpected response: HTTP \(statusCode).")
+            code.map { String(localized: "Unexpected response: HTTP \(String(statusCode)) (\($0)).") }
+                ?? String(localized: "Unexpected response: HTTP \(String(statusCode)).")
         }
     }
 
@@ -43,6 +43,6 @@ public enum ConnectionTestFailure: Equatable, Sendable {
         guard let statusCode else {
             return String(localized: "Upload worked, but the public URL could not be reached. \(advice)")
         }
-        return String(localized: "Upload worked, but the public URL returned HTTP \(statusCode). \(advice)")
+        return String(localized: "Upload worked, but the public URL returned HTTP \(String(statusCode)). \(advice)")
     }
 }
