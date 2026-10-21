@@ -74,7 +74,7 @@ The Secret Access Key is stored in the macOS Keychain, never in a plain file.
 
 ## Building from source
 
-Requires Xcode 16 or later and [Homebrew](https://brew.sh).
+Requires Xcode 26 or later and [Homebrew](https://brew.sh).
 
 ```bash
 git clone https://github.com/siracozmen01/snapbolt.git

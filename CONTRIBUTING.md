@@ -13,7 +13,7 @@ Thanks for helping. This guide covers how to get set up and what a pull request 
 
 ## Setup
 
-1. Install Xcode 16 or later and [Homebrew](https://brew.sh).
+1. Install Xcode 26 or later and [Homebrew](https://brew.sh).
 2. Clone and generate the project:
 
    ```bash

@@ -17,6 +17,8 @@ final class OverlayPanel: NSPanel {
         acceptsMouseMovedEvents = true
         isReleasedWhenClosed = false
         contentView = selectionView
+        // Without this the window itself receives Escape and Return and only beeps.
+        makeFirstResponder(selectionView)
         setFrame(display.frameInGlobalPoints, display: false)
     }
 

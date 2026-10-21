@@ -69,7 +69,8 @@ not require restructuring Phase 1 modules beyond adding a step to the workflow.
 | Bundle identifier | `io.github.siracozmen01.Snapbolt` | — |
 | App type | Agent app (`LSUIElement = YES`): menu bar icon, no Dock icon | — |
 
-Development requires **Xcode 16 or newer** (Swift Testing, `swift format`). The Command Line Tools
+Development requires **Xcode 26 or newer**: KeyboardShortcuts 3.x needs Swift tools 6.2, and Swift
+Testing and `swift format` ship with Xcode. The Command Line Tools
 alone cannot run the tests.
 
 ## 6. Architecture
@@ -245,7 +246,7 @@ Rules: [docs/conventions/testing.md](../conventions/testing.md).
 - `.swiftlint.yml` and `.swift-format` implement the limits and rules in
   [docs/conventions](../conventions/README.md), including custom rules for `try?`
   (`no_try_optional`), empty `catch`, `print`, and `TODO` without an issue number.
-- GitHub Actions on `macos-15`: generate project, build app, run package tests, SwiftLint
+- GitHub Actions on `macos-26` (Xcode 26; the deployment target stays macOS 15): generate project, build app, run package tests, SwiftLint
   (`--strict`), `swift format lint --strict`. All must pass before merge.
 - Code signing during development uses the developer's own Apple Development certificate (a free
   Apple ID is enough) so the Screen Recording permission survives rebuilds. Ad-hoc signing changes
