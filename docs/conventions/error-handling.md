@@ -2,8 +2,12 @@
 
 ## Principles
 
-1. **Errors are typed per module.** Each module declares an `enum <Domain>Error: Error, Sendable`
-   with cases that carry the information needed to act on them.
+1. **Errors are typed per domain and declared in `SnapboltCore`.** Each domain has an
+   `enum <Domain>Error: Error, Sendable` (`CaptureError`, `UploadError`, `SettingsError`,
+   `FileSaveError`) with cases that carry the information needed to act on them. They live in Core,
+   next to the protocol whose contract they belong to, because `SnapboltWorkflow` can import only
+   Core and must be able to map every error. Errors that never leave a module (e.g. a parser's
+   internal failure) stay private to that module and are converted before crossing the boundary.
 2. **Errors are not swallowed.** Every error is either handled (with a decision recorded in code)
    or propagated.
 3. **One place turns errors into messages.** Feature modules throw domain errors;
@@ -49,7 +53,7 @@ public enum UploadError: Error, Sendable, Equatable {
 public struct UserFacingError: Sendable, Equatable {
     public let title: String          // "Upload failed"
     public let message: String        // "The access key is not valid for this bucket."
-    public let recovery: Recovery?    // .openStorageSettings, .openPrivacySettings, .retry
+    public let recovery: Recovery?    // .openStorageSettings, .openPrivacySettings
 }
 ```
 

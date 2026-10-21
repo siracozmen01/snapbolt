@@ -210,8 +210,9 @@ public URL not reachable.
 
 ## 9. Error handling
 
-- Each module defines its own error type (`CaptureError`, `UploadError`, `SettingsError`, …),
-  conforming to `Error` and `Sendable`.
+- Each domain has its own error type (`CaptureError`, `UploadError`, `SettingsError`,
+  `FileSaveError`), conforming to `Error` and `Sendable`, declared in `SnapboltCore` so the workflow
+  can map them.
 - `SnapboltWorkflow` is the single place that maps errors to a `UserFacingError`
   (title, message, optional recovery action).
 - Cancellation is modelled as a result (`Selection?` returning `nil`), not an error.

@@ -39,7 +39,7 @@ Snapbolt/
 
 | Module | Responsibility | Does not |
 |---|---|---|
-| `SnapboltCore` | Domain types (`FrozenScreens`, `Selection`, `CapturedImage`, `UploadResult`, …), the protocols every feature implements, pure geometry and cropping. | Import AppKit, SwiftUI or any Snapbolt module. |
+| `SnapboltCore` | Domain types (`FrozenScreens`, `Selection`, `EncodedImage`, `UploadResult`, …), the protocols every feature implements, the domain error types, pure geometry and cropping. | Import AppKit, SwiftUI or any Snapbolt module. |
 | `SnapboltCapture` | Freeze-frame screenshots of displays via ScreenCaptureKit, the on-screen window list, PNG encoding. | Show UI. |
 | `SnapboltOverlay` | The selection UI drawn over frozen images: region drag, window highlight, magnifier, keyboard handling. | Capture or upload anything. |
 | `SnapboltUpload` | S3-compatible client: SigV4 signing, object `PUT`/`GET`/`DELETE`, connection test, error mapping. | Know where the bytes came from. |
