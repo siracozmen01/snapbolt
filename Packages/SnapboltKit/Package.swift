@@ -24,6 +24,7 @@ let testedModules = [
     "SnapboltOverlay",
     "SnapboltSettings",
     "SnapboltHotkeys",
+    "SnapboltHistory",
 ]
 
 let package = Package(
