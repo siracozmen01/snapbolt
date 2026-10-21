@@ -20,6 +20,7 @@ let featureModules = [
 let testedModules = [
     "SnapboltWorkflow",
     "SnapboltUpload",
+    "SnapboltCapture",
 ]
 
 let package = Package(
