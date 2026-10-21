@@ -3,8 +3,8 @@
 **Screenshot → your own bucket → link on your clipboard.** A free, open-source ShareX-style capture
 tool for macOS that uploads to Cloudflare R2 or any S3-compatible storage.
 
-> **Status: early development.** Nothing is released yet. The design is in
-> [docs/specs](docs/specs/2026-10-21-snapbolt-phase-1-design.md); follow the repository for the
+> **Status: Phase 1 in testing.** Capture and upload are implemented and being tested on real
+> hardware; there is no release yet. Build from source to try it, or follow the repository for the
 > first release.
 
 ## Why
@@ -31,6 +31,18 @@ tool for macOS that uploads to Cloudflare R2 or any S3-compatible storage.
 - macOS 15 Sequoia or later
 - A Cloudflare R2 bucket (or any S3-compatible storage) for uploads — optional; without it Snapbolt
   copies the image to the clipboard and saves it locally.
+
+## Installing
+
+Once a version is released:
+
+1. Download `Snapbolt-vX.Y.Z.zip` from [Releases](https://github.com/siracozmen01/snapbolt/releases)
+   and move `Snapbolt.app` to Applications.
+2. Snapbolt is not notarized yet, so the first launch is blocked by Gatekeeper. Open it once with
+   **right-click → Open**, or allow it under **System Settings → Privacy & Security → Open Anyway**.
+3. Grant **Screen Recording** when Snapbolt asks, then quit and reopen it.
+4. Press **⌥⇧4** to capture a region or window, **⌥⇧3** for the display under the cursor. Both can be
+   changed in **Settings → Shortcuts**.
 
 ## Setting up Cloudflare R2
 
