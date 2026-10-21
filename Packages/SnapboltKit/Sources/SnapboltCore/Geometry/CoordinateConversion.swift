@@ -30,4 +30,19 @@ public enum CoordinateConversion {
     public static func localPoint(fromGlobalPoint point: CGPoint, on display: FrozenDisplay) -> CGPoint {
         CGPoint(x: point.x - display.frameInGlobalPoints.minX, y: point.y - display.frameInGlobalPoints.minY)
     }
+
+    /// Converts a rect in AppKit global points to a rect local to `display` (origin bottom-left of
+    /// that display, y up, points).
+    public static func localRect(fromGlobalRect rect: CGRect, on display: FrozenDisplay) -> CGRect {
+        rect.offsetBy(dx: -display.frameInGlobalPoints.minX, dy: -display.frameInGlobalPoints.minY)
+    }
+
+    /// Returns the display pixel (origin top-left, y down) that contains a point in AppKit global points.
+    public static func pixel(atGlobalPoint point: CGPoint, on display: FrozenDisplay) -> CGPoint {
+        let frame = display.frameInGlobalPoints
+        return CGPoint(
+            x: ((point.x - frame.minX) * display.scale).rounded(.down),
+            y: ((frame.maxY - point.y) * display.scale).rounded(.down)
+        )
+    }
 }

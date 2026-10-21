@@ -68,6 +68,21 @@ struct CoordinateConversionTests {
         #expect(point == CGPoint(x: 20, y: 1018))
     }
 
+    @Test("Converts a global rect to a rect local to the display")
+    func convertsGlobalRectToLocalRect() {
+        let rect = CoordinateConversion.localRect(
+            fromGlobalRect: CGRect(x: -1900, y: 2000, width: 100, height: 50), on: aboveLeft)
+
+        #expect(rect == CGRect(x: 20, y: 1018, width: 100, height: 50))
+    }
+
+    @Test("Converts a global point to the display pixel under it")
+    func convertsGlobalPointToPixel() {
+        let pixel = CoordinateConversion.pixel(atGlobalPoint: CGPoint(x: 100.3, y: 781.6), on: main)
+
+        #expect(pixel == CGPoint(x: 200, y: 400))
+    }
+
     private func atOrigin(_ display: FrozenDisplay) -> FrozenDisplay {
         var frame = display.frameInGlobalPoints
         frame.origin = .zero
