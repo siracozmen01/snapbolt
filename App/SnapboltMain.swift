@@ -1,4 +1,5 @@
 import AppKit
+import SnapboltSystem
 
 /// Entry point. `@main` lives here rather than on the delegate because, without a main nib,
 /// AppKit never instantiates an `NSApplicationDelegate` marked `@main`.
@@ -9,6 +10,7 @@ enum SnapboltMain {
         let application = NSApplication.shared
         let delegate = AppDelegate()
         application.delegate = delegate
+        application.mainMenu = StandardMenus.makeMainMenu()
         application.run()
     }
 }
