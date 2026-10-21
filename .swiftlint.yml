@@ -1,0 +1,92 @@
+# Limits and rules mirror docs/conventions. Change both together.
+included:
+  - App
+  - Packages/SnapboltKit/Sources
+  - Packages/SnapboltKit/Tests
+
+excluded:
+  - Packages/SnapboltKit/.build
+
+disabled_rules:
+  - todo # replaced by the todo_needs_issue custom rule
+  - trailing_comma # swift-format adds trailing commas
+
+opt_in_rules:
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - fatal_error_message
+  - sorted_imports
+  - strict_fileprivate
+  - empty_count
+  - first_where
+  - contains_over_first_not_nil
+  - redundant_nil_coalescing
+
+file_length:
+  warning: 250
+  error: 300
+  ignore_comment_only_lines: true
+
+type_body_length:
+  warning: 150
+  error: 200
+
+function_body_length:
+  warning: 30
+  error: 40
+
+cyclomatic_complexity:
+  warning: 8
+  error: 12
+
+function_parameter_count:
+  warning: 5
+  error: 7
+
+nesting:
+  type_level:
+    warning: 1
+    error: 2
+
+line_length:
+  warning: 120
+  error: 140
+  ignores_urls: true
+  ignores_comments: false
+
+large_tuple:
+  warning: 2
+  error: 3
+
+identifier_name:
+  excluded: [id, x, y, w, h, to, at, on, of, by]
+
+custom_rules:
+  no_try_optional:
+    name: "No try?"
+    regex: 'try\?'
+    match_kinds: [keyword]
+    message: "Handle the error, or justify it with swiftlint:disable:next no_try_optional - reason"
+    severity: error
+  no_empty_catch:
+    name: "No empty catch"
+    regex: 'catch[^{\n]*\{\s*\}'
+    message: "A catch must handle, log or rethrow"
+    severity: error
+  no_print:
+    name: "No print"
+    regex: '\b(print|NSLog)\('
+    match_kinds: [identifier]
+    message: "Use the module logger"
+    severity: error
+  todo_needs_issue:
+    name: "TODO needs issue"
+    regex: '//\s*(TODO|FIXME)(?!\(#\d+\))'
+    match_kinds: [comment]
+    message: "Write TODO(#issue)"
+    severity: error
+  banned_type_names:
+    name: "Banned type name"
+    regex: '(class|struct|enum|actor|protocol)\s+\w*(Manager|Helper|Utils|Utilities|Common|Misc)\b'
+    message: "Name the responsibility instead (see docs/conventions/naming.md)"
+    severity: error

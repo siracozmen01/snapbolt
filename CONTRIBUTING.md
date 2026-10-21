@@ -22,8 +22,16 @@ Thanks for helping. This guide covers how to get set up and what a pull request 
    open Snapbolt.xcodeproj
    ```
 
-3. In *Signing & Capabilities*, select your personal team. A free Apple ID works. Without a stable
-   signing identity macOS asks for the Screen Recording permission again after every build.
+3. Create the git-ignored `Config/Signing.local.xcconfig` with your personal team (a free Apple ID
+   works):
+
+   ```
+   DEVELOPMENT_TEAM = ABCDE12345
+   CODE_SIGN_IDENTITY = Apple Development
+   ```
+
+   Without a stable signing identity macOS asks for the Screen Recording permission again after
+   every build.
 4. Run `make test` to make sure everything passes before you change anything.
 
 ## Read these first

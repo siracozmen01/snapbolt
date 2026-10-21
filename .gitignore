@@ -20,3 +20,6 @@ DerivedData/
 # Local environment (integration test credentials etc.)
 .env
 .env.*
+
+# Personal signing settings
+Config/Signing.local.xcconfig

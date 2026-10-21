@@ -1,0 +1,6 @@
+# Tests may crash on unexpected values and may be longer than production functions.
+disabled_rules:
+  - force_unwrapping
+  - force_try
+  - force_cast
+  - function_body_length

@@ -1,0 +1,10 @@
+// Default: ad-hoc signing, so the project builds for anyone (and in CI).
+// macOS forgets the Screen Recording permission whenever an ad-hoc signed app is rebuilt.
+// To keep it, create the git-ignored Config/Signing.local.xcconfig with your own team:
+//
+//   DEVELOPMENT_TEAM = ABCDE12345
+//   CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = -
+
+#include? "Signing.local.xcconfig"

@@ -72,8 +72,16 @@ make project     # generates Snapbolt.xcodeproj
 open Snapbolt.xcodeproj
 ```
 
-Select your own team under *Signing & Capabilities* so macOS keeps the Screen Recording permission
-across rebuilds.
+To keep the Screen Recording permission across rebuilds, sign with your own Apple Development
+certificate (a free Apple ID is enough) by creating `Config/Signing.local.xcconfig`:
+
+```
+DEVELOPMENT_TEAM = ABCDE12345
+CODE_SIGN_IDENTITY = Apple Development
+```
+
+The file is git-ignored. Without it the app is ad-hoc signed and macOS asks for the permission again
+after every build.
 
 ## Contributing
 

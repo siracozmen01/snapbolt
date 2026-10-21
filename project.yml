@@ -1,0 +1,49 @@
+name: Snapbolt
+
+options:
+  bundleIdPrefix: io.github.siracozmen01
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  SnapboltKit:
+    path: Packages/SnapboltKit
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  Snapbolt:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+    dependencies:
+      - package: SnapboltKit
+        product: SnapboltKit
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
+    info:
+      path: App/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Snapbolt
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSUIElement: true
+        NSHumanReadableCopyright: Copyright © 2026 Sirac Ozmen. MIT License.
+    entitlements:
+      path: App/Resources/Snapbolt.entitlements
+      properties: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.siracozmen01.Snapbolt
+        PRODUCT_NAME: Snapbolt
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_STRICT_CONCURRENCY: complete
