@@ -21,6 +21,7 @@ let testedModules = [
     "SnapboltWorkflow",
     "SnapboltUpload",
     "SnapboltCapture",
+    "SnapboltOverlay",
 ]
 
 let package = Package(
