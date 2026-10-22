@@ -8,8 +8,10 @@ enum Samples {
         ArrowAnnotation(startInPixels: start, endInPixels: end, color: .defaultRed, lineWidthInPixels: width)
     }
 
-    static func rectangle(_ rect: CGRect, width: CGFloat = 4, filled: Bool = false) -> RectangleAnnotation {
-        RectangleAnnotation(rectInPixels: rect, color: .defaultRed, lineWidthInPixels: width, isFilled: filled)
+    static func rectangle(
+        _ rect: CGRect, width: CGFloat = 4, filled: Bool = false, color: RGBAColor = .defaultRed
+    ) -> RectangleAnnotation {
+        RectangleAnnotation(rectInPixels: rect, color: color, lineWidthInPixels: width, isFilled: filled)
     }
 
     static func text(
