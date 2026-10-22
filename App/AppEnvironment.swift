@@ -1,6 +1,7 @@
 import Foundation
 import SnapboltCapture
 import SnapboltCore
+import SnapboltEditor
 import SnapboltHistory
 import SnapboltOverlay
 import SnapboltSettings
@@ -26,6 +27,7 @@ final class AppEnvironment {
             dependencies: CaptureWorkflow.Dependencies(
                 capturer: ScreenCaptureKitCapturer(),
                 selector: OverlayController(),
+                editor: EditorController(),
                 encoder: PNGEncoder(),
                 saver: LocalCaptureFileSaver(),
                 uploader: S3Uploader(),
