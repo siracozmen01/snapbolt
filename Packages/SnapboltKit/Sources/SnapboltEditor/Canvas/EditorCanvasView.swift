@@ -59,7 +59,7 @@ final class EditorCanvasView: NSView {
         let editingID = model.state.editingTextID
         if let field = textField, editingID == nil {
             textField = nil
-            field.removeFromSuperview()
+            field.textView.removeFromSuperview()
         }
         guard textField == nil, let editingID,
             case .text(let text) = model.state.document.annotation(withID: editingID)?.kind
@@ -68,14 +68,14 @@ final class EditorCanvasView: NSView {
             self?.closeTextField(committing: string)
         }
         textField = field
-        addSubview(field)
-        window?.makeFirstResponder(field)
+        addSubview(field.textView)
+        window?.makeFirstResponder(field.textView)
     }
 
     private func closeTextField(committing string: String) {
         guard let field = textField else { return }
         textField = nil
-        field.removeFromSuperview()
+        field.textView.removeFromSuperview()
         model.commitText(string)
         window?.makeFirstResponder(self)
     }
