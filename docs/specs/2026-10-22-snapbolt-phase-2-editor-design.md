@@ -230,8 +230,8 @@ failures are handled inside the editor (see §7).
 - `GeneralSettingsModel` gains `opensEditor` (saved on change) and `GeneralSettingsView` gains the
   **Editor** section.
 - `AppEnvironment` owns the single `GeneralSettingsModel`; `SettingsWindowController` uses it
-  instead of creating its own, and the menu toggles it. `MenuBarController` sets the item's check
-  mark from the model whenever the menu opens (`NSMenuDelegate.menuNeedsUpdate(_:)`).
+  instead of creating its own, and the menu toggles it. The menu item sets its check mark from the
+  model whenever the menu opens (in `validateMenuItem(_:)`, which AppKit calls on every opening).
 
 ### 4.5 Coordinate spaces
 
@@ -297,6 +297,9 @@ Sources/SnapboltEditor/
     └── EditorModel.swift             @MainActor @Observable: state, history, actions
 ```
 
+- The [implementation plan](../plans/2026-10-22-snapbolt-phase-2.md) refines this layout to keep
+  every folder at eight files or fewer (for example, `EditHistory` moves to `Editing/` and
+  `RGBAColor` to `Rendering/`); the plan's file list is authoritative.
 - `Document/`, `Editing/`, `Tools/` and `Rendering/` are pure logic over value types and are where
   the unit tests concentrate. `Canvas/`, `Toolbar/` and `Window/` are thin UI.
 - `EditorModel` is the one place that mutates state: tools return new states, the model commits
@@ -389,7 +392,7 @@ Drawing order: the image, then shapes in document order.
 | Data | Location |
 |---|---|
 | Edit After Capture | `UserDefaults`, `capture.opensEditor` |
-| Last style per tool | `UserDefaults`, `editor.<tool>.<property>` |
+| Last style per tool | `UserDefaults`, `editor.style.<tool>` (JSON-encoded style) |
 
 Nothing else is stored. Edited images follow the Phase 1 rules for local copies.
 
