@@ -1,6 +1,6 @@
 # Snapbolt — Phase 2 Design: Annotation Editor
 
-- **Status:** Draft, awaiting review
+- **Status:** Approved
 - **Date:** 2026-10-22
 - **Owner:** @siracozmen01
 - **Builds on:** [Phase 1 design](2026-10-21-snapbolt-phase-1-design.md) (merged)
