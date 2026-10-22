@@ -7,6 +7,9 @@ import Synchronization
 /// Makes the pixelated or blurred patch for a redaction area. Patches always sample the original capture,
 /// never the shapes drawn on it, so each one is cached until its area, mode or strength changes.
 final class RedactionRenderer: Sendable {
+    /// At most this many patches are kept; dragging an area makes a new patch at every position.
+    static let cacheLimit = 32
+
     private let source: CGImage
     private let scale: CGFloat
     private let context: CIContext
@@ -46,7 +49,11 @@ final class RedactionRenderer: Sendable {
             let output = filtered(input, area: areaInCI, redaction: redaction),
             let patch = context.createCGImage(output, from: areaInCI)
         else { return nil }
-        cache.withLock { $0[redaction] = patch }
+        cache.withLock { cache in
+            // Starting over is simpler than tracking age, and the areas still on the canvas re-render once.
+            if cache.count >= Self.cacheLimit { cache.removeAll(keepingCapacity: true) }
+            cache[redaction] = patch
+        }
         return patch
     }
 

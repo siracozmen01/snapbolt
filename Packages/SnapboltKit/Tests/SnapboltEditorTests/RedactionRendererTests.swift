@@ -67,4 +67,15 @@ struct RedactionRendererTests {
         _ = renderer.patch(for: Samples.redaction(CGRect(x: 10, y: 10, width: 40, height: 20), strength: 90))
         #expect(renderer.cachedPatchCount == 2)
     }
+
+    @Test("Dragging a redaction does not grow the cache without bound")
+    func cacheStaysBounded() {
+        let renderer = RedactionRenderer(source: .solid(width: 400, height: 100), scale: 1, context: context)
+
+        for offset in 0..<200 {
+            _ = renderer.patch(for: Samples.redaction(CGRect(x: CGFloat(offset), y: 10, width: 50, height: 50)))
+        }
+
+        #expect(renderer.cachedPatchCount <= RedactionRenderer.cacheLimit)
+    }
 }
