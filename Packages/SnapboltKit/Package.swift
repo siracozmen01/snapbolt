@@ -14,6 +14,7 @@ let featureModules = [
     "SnapboltHistory",
     "SnapboltSystem",
     "SnapboltWorkflow",
+    "SnapboltEditor",
 ]
 
 /// Feature modules that have a `<Module>Tests` target. Each plan task adds its module here.
@@ -26,6 +27,7 @@ let testedModules = [
     "SnapboltHotkeys",
     "SnapboltHistory",
     "SnapboltSystem",
+    "SnapboltEditor",
 ]
 
 let package = Package(
