@@ -46,4 +46,23 @@ struct GeneralSettingsModelTests {
             store.currentCapturePreferences()
                 == CapturePreferences(saveLocally: false, folder: URL(filePath: "/Users/me/Shots")))
     }
+
+    @Test("Turning the editor on saves it")
+    func togglingEditorSavesIt() {
+        let model = GeneralSettingsModel(store: store, launchAtLogin: FakeLaunchAtLogin())
+
+        model.opensEditor = true
+
+        #expect(store.currentCapturePreferences().opensEditor)
+    }
+
+    @Test("Changing the folder keeps the editor setting")
+    func keepsEditorWhenChangingFolder() {
+        let model = GeneralSettingsModel(store: store, launchAtLogin: FakeLaunchAtLogin())
+        model.opensEditor = true
+
+        model.folder = URL(filePath: "/Users/me/Shots")
+
+        #expect(store.currentCapturePreferences().opensEditor)
+    }
 }

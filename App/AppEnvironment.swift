@@ -19,10 +19,13 @@ final class AppEnvironment {
     let connectionTester = S3ConnectionTester()
     let clipboard = PasteboardClipboard()
     let notifier: UserNotificationNotifier
+    /// The General settings, shared by the settings window and the menu's Edit After Capture item.
+    let generalSettings: GeneralSettingsModel
     let workflow: CaptureWorkflow
 
     init(onRecovery: @escaping @MainActor @Sendable (Recovery) -> Void) {
         notifier = UserNotificationNotifier(onRecovery: onRecovery)
+        generalSettings = GeneralSettingsModel(store: settingsStore, launchAtLogin: launchAtLogin)
         workflow = CaptureWorkflow(
             dependencies: CaptureWorkflow.Dependencies(
                 capturer: ScreenCaptureKitCapturer(),

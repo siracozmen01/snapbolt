@@ -14,6 +14,10 @@ public final class GeneralSettingsModel {
     public var folder: URL {
         didSet { savePreferences() }
     }
+    /// Whether every capture opens in the editor. Saved as soon as it changes.
+    public var opensEditor: Bool {
+        didSet { savePreferences() }
+    }
     /// Whether Snapbolt launches at login.
     public private(set) var launchAtLoginEnabled: Bool
     /// Why the last change failed, if it did.
@@ -29,6 +33,7 @@ public final class GeneralSettingsModel {
         let preferences = store.currentCapturePreferences()
         saveLocally = preferences.saveLocally
         folder = preferences.folder
+        opensEditor = preferences.opensEditor
         launchAtLoginEnabled = launchAtLogin.isEnabled
     }
 
@@ -45,6 +50,7 @@ public final class GeneralSettingsModel {
     }
 
     private func savePreferences() {
-        store.saveCapturePreferences(CapturePreferences(saveLocally: saveLocally, folder: folder))
+        store.saveCapturePreferences(
+            CapturePreferences(saveLocally: saveLocally, folder: folder, opensEditor: opensEditor))
     }
 }

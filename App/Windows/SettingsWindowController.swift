@@ -12,7 +12,7 @@ final class SettingsWindowController {
         let root = SettingsRootView(
             navigation: navigation,
             storage: StorageSettingsModel(store: environment.settingsStore, tester: environment.connectionTester),
-            general: GeneralSettingsModel(store: environment.settingsStore, launchAtLogin: environment.launchAtLogin)
+            general: environment.generalSettings
         )
         window = NSWindow(contentViewController: NSHostingController(rootView: root))
         window.title = String(localized: "Snapbolt Settings")
