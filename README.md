@@ -23,7 +23,7 @@ tool for macOS that uploads to Cloudflare R2 or any S3-compatible storage.
 | Phase | Features |
 |---|---|
 | 1 | Region, window and full-screen capture · upload to S3-compatible storage · link to clipboard · notifications · recent uploads · local copies |
-| 2 | Editor: arrows, boxes, text, blur, crop before uploading |
+| 2 | Editor: arrows, boxes, text, pixelate/blur, crop before uploading (Edit After Capture) |
 | 3 | Screen recording to MP4 (and GIF), uploaded the same way |
 
 ## Requirements
