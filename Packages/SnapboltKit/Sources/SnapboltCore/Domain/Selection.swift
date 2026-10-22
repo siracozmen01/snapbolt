@@ -9,3 +9,13 @@ public enum Selection: Equatable, Sendable {
     /// A whole display.
     case display(DisplayID)
 }
+
+extension Selection {
+    /// The display the selection was made on.
+    public var displayID: DisplayID {
+        switch self {
+        case .region(let id, _), .window(let id, _), .display(let id):
+            id
+        }
+    }
+}

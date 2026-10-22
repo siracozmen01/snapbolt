@@ -22,10 +22,13 @@ extension StorageSettings {
 }
 
 extension FrozenDisplay {
-    /// A scale-1 display at the global origin with a solid image of the given size.
-    public static func fixture(id: UInt32 = 1, width: Int = 100, height: Int = 100) -> FrozenDisplay {
+    /// A display at the global origin with a solid image of the given pixel size.
+    public static func fixture(id: UInt32 = 1, width: Int = 100, height: Int = 100, scale: CGFloat = 1)
+        -> FrozenDisplay
+    {
         FrozenDisplay(
             id: DisplayID(rawValue: id), image: .solid(width: width, height: height),
-            frameInGlobalPoints: CGRect(x: 0, y: 0, width: width, height: height), scale: 1)
+            frameInGlobalPoints: CGRect(x: 0, y: 0, width: CGFloat(width) / scale, height: CGFloat(height) / scale),
+            scale: scale)
     }
 }

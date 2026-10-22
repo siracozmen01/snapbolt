@@ -88,4 +88,14 @@ struct CoordinateConversionTests {
         frame.origin = .zero
         return FrozenDisplay(id: display.id, image: display.image, frameInGlobalPoints: frame, scale: 1)
     }
+
+    @Test("Flips rects between top-down and bottom-up image coordinates")
+    func flipsRectBetweenTopDownAndBottomUp() {
+        let topDown = CGRect(x: 10, y: 20, width: 30, height: 40)
+
+        let bottomUp = CoordinateConversion.bottomUpRect(fromTopDownRect: topDown, imageHeight: 100)
+
+        #expect(bottomUp == CGRect(x: 10, y: 40, width: 30, height: 40))
+        #expect(CoordinateConversion.bottomUpRect(fromTopDownRect: bottomUp, imageHeight: 100) == topDown)
+    }
 }
