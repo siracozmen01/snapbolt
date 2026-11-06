@@ -6,6 +6,7 @@ extension CaptureWorkflow {
     public struct Dependencies {
         let capturer: any ScreenCapturing
         let selector: any SelectionPresenting
+        let editor: any ImageEditing
         let encoder: any ImageEncoding
         let saver: any LocalCaptureSaving
         let uploader: any Uploading
@@ -19,6 +20,7 @@ extension CaptureWorkflow {
         public init(
             capturer: any ScreenCapturing,
             selector: any SelectionPresenting,
+            editor: any ImageEditing,
             encoder: any ImageEncoding,
             saver: any LocalCaptureSaving,
             uploader: any Uploading,
@@ -30,6 +32,7 @@ extension CaptureWorkflow {
         ) {
             self.capturer = capturer
             self.selector = selector
+            self.editor = editor
             self.encoder = encoder
             self.saver = saver
             self.uploader = uploader

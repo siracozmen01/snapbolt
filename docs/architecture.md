@@ -34,6 +34,7 @@ Snapbolt/
 │   │   ├── SnapboltHistory/
 │   │   ├── SnapboltSystem/
 │   │   ├── SnapboltWorkflow/
+│   │   ├── SnapboltEditor/
 │   │   └── SnapboltTestSupport/   # fakes shared by test targets
 │   └── Tests/                  # <Module>Tests, one per module
 └── docs/
@@ -51,13 +52,14 @@ Snapbolt/
 | `SnapboltHotkeys` | Global shortcut registration and the shortcut recorder control. | Decide what a shortcut does. |
 | `SnapboltHistory` | Persisting and reading the last 10 uploads. | Touch the clipboard or UI. |
 | `SnapboltSystem` | Thin adapters over macOS services: pasteboard, notifications, file writing, opening URLs, launch at login, permission status. | Contain business logic. |
-| `SnapboltWorkflow` | The capture pipeline: freeze → select → crop → encode → save → upload → clipboard → notify. Maps errors to user-facing messages. | Import any module except Core. |
+| `SnapboltEditor` | The optional annotation editor between capture and upload: the annotation document, editing tools, rendering and export (Core Graphics, Core Image) and the editor window. Implements `ImageEditing`. | Save, upload or touch the clipboard; it only returns the edited image. |
+| `SnapboltWorkflow` | The capture pipeline: freeze → select → crop → edit (optional) → encode → save → upload → clipboard → notify. Maps errors to user-facing messages. | Import any module except Core. |
 | App target | Composition root and menu bar. | Contain logic worth testing — move it into a module. |
 
 `SnapboltTestSupport` is a test-only target with shared fakes (`FakeUploader`, `SpyClipboard`, …).
 It depends on `SnapboltCore` and is used only by test targets.
 
-Phase 2 adds `SnapboltEditor`; Phase 3 adds `SnapboltRecording`. Both follow the same rules.
+Phase 2 added `SnapboltEditor`; Phase 3 adds `SnapboltRecording`. Both follow the same rules.
 
 ## Dependency rules
 
@@ -65,7 +67,7 @@ Phase 2 adds `SnapboltEditor`; Phase 3 adds `SnapboltRecording`. Both follow the
                  ┌──────────────► SnapboltCore ◄──────────────┐
                  │                     ▲                       │
 App ──► SnapboltWorkflow ──────────────┘          Capture, Overlay, Upload, Settings,
- │                                                Hotkeys, History, System
+ │                                                Hotkeys, History, System, Editor
  └──────────────────────────────────────────────► (constructed by the App target only)
 ```
 
@@ -121,6 +123,8 @@ Coordinate bugs are the most likely source of defects, so the spaces are named e
 | Display points | Bottom-left of one display, y up | points | Overlay view drawing |
 | Display pixels | **Top-left** of one display, y down | pixels | Frozen `CGImage`, `Selection` rects, cropping |
 | SCK frames | Top-left of the primary display, y down | points | `SCWindow.frame`, `SCDisplay.frame` |
+| Image pixels | Top-left of the captured (cropped) image, y down | pixels | Editor document, rendering, export |
+| Canvas points | Top-left of the editor's flipped canvas view, y down | points | Editor mouse events and drawing; zoom is the scroll view's magnification |
 
 All conversions live in `SnapboltCore/Geometry` as pure functions with unit tests. Code outside that
 folder never converts coordinates by hand.
@@ -141,6 +145,8 @@ folder never converts coordinates by hand.
 | Secret Access Key | Keychain, service `io.github.siracozmen01.Snapbolt.storage` |
 | Upload history | `~/Library/Application Support/Snapbolt/history.json` |
 | Local captures | `~/Pictures/Snapbolt/YYYY-MM/` (configurable) |
+| Edit After Capture | `UserDefaults`, `capture.opensEditor` |
+| Last editor style per tool | `UserDefaults`, `editor.style.<tool>` (JSON) |
 
 ## Decisions
 

@@ -66,4 +66,14 @@ struct SettingsStoreTests {
             try await store.storageSettings()
         }
     }
+
+    @Test("Saves whether the editor opens after a capture")
+    func savesOpensEditor() async {
+        let store = SettingsStore(defaults: defaults, secrets: InMemorySecretStore())
+
+        store.saveCapturePreferences(
+            CapturePreferences(saveLocally: true, folder: URL(filePath: "/Users/me/Shots"), opensEditor: true))
+
+        #expect(await store.capturePreferences().opensEditor)
+    }
 }

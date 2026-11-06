@@ -10,6 +10,8 @@ final class MenuBarController {
         let copyLink: @MainActor (URL) -> Void
         let openCapturesFolder: @MainActor () -> Void
         let openSettings: @MainActor () -> Void
+        let isEditorEnabled: @MainActor () -> Bool
+        let toggleEditor: @MainActor () -> Void
     }
 
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -40,6 +42,10 @@ final class MenuBarController {
             ClosureMenuItem(title: String(localized: "Capture Full Screen")) { [actions] in
                 actions.capture(.fullScreen)
             })
+        menu.addItem(
+            ToggleMenuItem(
+                title: String(localized: "Edit After Capture"), isOn: actions.isEditorEnabled,
+                toggle: actions.toggleEditor))
         menu.addItem(.separator())
         menu.addItem(recentUploadsItem())
         menu.addItem(

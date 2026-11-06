@@ -60,6 +60,27 @@ Copy the relevant sections into the PR description and tick them.
 - [ ] Network off: retries, then fails with a network message; image is on the clipboard.
 - [ ] Recent Uploads menu lists the last 10; clicking copies the link.
 
+### Editor
+
+Turn on **Edit After Capture** in the menu first. Check on a Retina display and, where noted, on a
+non-Retina external display.
+
+- [ ] The editor opens on the display under the mouse, in front of other apps, and in front of
+      Minecraft in native full screen.
+- [ ] Arrow, rectangle and redaction: draw, select, move, resize by handles, restyle, delete (⌫);
+      ⇧ snaps arrows to 45° and makes squares.
+- [ ] Text: click to place, type several lines, Escape commits, double-click re-edits; the text
+      appears where it was typed after committing.
+- [ ] Crop: draw, adjust by handles, move, Reset, ⌘Z; the uploaded image matches the crop exactly.
+- [ ] The uploaded image is identical to what the editor showed (Retina and non-Retina captures).
+- [ ] Text under a default-strength Pixelate area is unreadable in the uploaded image.
+- [ ] Zoom: ⌘+, ⌘−, ⌘0, ⌘1, pinch; editing stays smooth on a 5K capture.
+- [ ] Upload (⌘Return) gives a link; Copy (⇧⌘C) puts the image on the clipboard without uploading;
+      Cancel (Escape) asks "Discard this capture?" only after changes and leaves no trace.
+- [ ] Two editors open at once (capture again while one is open) finish independently.
+- [ ] Edit After Capture in the menu and in Settings › General stay in sync and survive a relaunch.
+- [ ] With Edit After Capture off, captures behave exactly as before.
+
 ### Settings and permissions
 
 - [ ] Test Connection reports success with valid settings and a specific message for: wrong endpoint,

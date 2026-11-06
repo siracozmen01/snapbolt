@@ -8,6 +8,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Optional annotation editor (arrow, rectangle, text, pixelate/blur, crop) between capture and
+  upload, turned on with Edit After Capture in the menu or in Settings. Upload, copy without
+  uploading, or cancel from the editor.
 - Region, window and full-screen capture on a frozen screen (⌥⇧4 and ⌥⇧3, configurable), so games
   that lock the cursor no longer block selection.
 - Upload to Cloudflare R2 or any S3-compatible storage, with the public link copied to the clipboard.

@@ -12,6 +12,7 @@ public struct SettingsStore: SettingsProviding {
         static let keyTemplate = "storage.keyTemplate"
         static let saveLocally = "capture.saveLocally"
         static let folderPath = "capture.folderPath"
+        static let opensEditor = "capture.opensEditor"
         static let secretAccount = "secretAccessKey"
     }
 
@@ -60,6 +61,7 @@ public struct SettingsStore: SettingsProviding {
     public func saveCapturePreferences(_ preferences: CapturePreferences) {
         defaults.set(preferences.saveLocally, forKey: Key.saveLocally)
         defaults.set(preferences.folder.path(percentEncoded: false), forKey: Key.folderPath)
+        defaults.set(preferences.opensEditor, forKey: Key.opensEditor)
     }
 
     /// The storage settings, or nil while any field is still empty.
@@ -69,7 +71,7 @@ public struct SettingsStore: SettingsProviding {
         return try draft.validated()
     }
 
-    /// The local-copy preferences; by default copies are saved to `~/Pictures/Snapbolt`.
+    /// The capture preferences; by default copies are saved to `~/Pictures/Snapbolt` and the editor is off.
     public func capturePreferences() async -> CapturePreferences {
         currentCapturePreferences()
     }
@@ -79,7 +81,8 @@ public struct SettingsStore: SettingsProviding {
         let saveLocally = defaults.object(forKey: Key.saveLocally) as? Bool ?? true
         let folder = defaults.string(forKey: Key.folderPath).map { URL(filePath: $0) }
         return CapturePreferences(
-            saveLocally: saveLocally, folder: folder ?? URL.picturesDirectory.appending(path: "Snapbolt"))
+            saveLocally: saveLocally, folder: folder ?? URL.picturesDirectory.appending(path: "Snapbolt"),
+            opensEditor: defaults.bool(forKey: Key.opensEditor))
     }
 }
 

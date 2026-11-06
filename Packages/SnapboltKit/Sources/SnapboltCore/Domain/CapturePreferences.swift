@@ -6,10 +6,13 @@ public struct CapturePreferences: Equatable, Sendable {
     public let saveLocally: Bool
     /// The root folder for local copies.
     public let folder: URL
+    /// Whether every capture opens in the editor before it is saved and uploaded.
+    public let opensEditor: Bool
 
     /// Creates capture preferences.
-    public init(saveLocally: Bool, folder: URL) {
+    public init(saveLocally: Bool, folder: URL, opensEditor: Bool = false) {
         self.saveLocally = saveLocally
         self.folder = folder
+        self.opensEditor = opensEditor
     }
 }

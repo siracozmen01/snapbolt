@@ -2,13 +2,13 @@ import CoreGraphics
 import Foundation
 import SnapboltCore
 
-/// Runs one capture from shortcut to clipboard: freeze → select → crop → encode → save → upload →
-/// clipboard → notify.
+/// Runs one capture from shortcut to clipboard: freeze → select → crop → edit (optional) → encode → save →
+/// upload → clipboard → notify.
 ///
 /// A capture is never lost: whenever no link can be produced, the image itself goes to the clipboard.
 @MainActor
 public final class CaptureWorkflow {
-    private let dependencies: Dependencies
+    let dependencies: Dependencies
 
     /// Whether the selection overlay is open; new region captures are ignored meanwhile.
     public private(set) var isSelecting = false
@@ -26,24 +26,33 @@ public final class CaptureWorkflow {
         }
         logger.info("Starting \(String(describing: mode), privacy: .public) capture")
         let capturedAt = dependencies.now()
-        let encoded: EncodedImage
+        let captured: CapturedImage
         do {
             guard let image = try await capture(mode) else { return }
-            encoded = try await Self.encode(image, with: dependencies.encoder)
+            captured = image
         } catch {
             await report(error, during: "Capture")
             return
         }
-        await saveLocalCopy(encoded, capturedAt: capturedAt)
-        await uploadAndCopyLink(encoded)
+        let preferences = await dependencies.settings.capturePreferences()
+        guard let edited = await edit(captured, preferences: preferences) else { return }
+        let encoded: EncodedImage
+        do {
+            encoded = try await Self.encode(edited.image, with: dependencies.encoder)
+        } catch {
+            await report(error, during: "Capture")
+            return
+        }
+        await saveLocalCopy(encoded, capturedAt: capturedAt, preferences: preferences)
+        await deliver(encoded, to: edited.destination)
     }
 
-    private func capture(_ mode: CaptureMode) async throws -> CGImage? {
+    private func capture(_ mode: CaptureMode) async throws -> CapturedImage? {
         switch mode {
         case .fullScreen:
             let screens = try await dependencies.capturer.freezeDisplays(.displayUnderCursor)
             guard let display = screens.displays.first else { throw CaptureError.noDisplays }
-            return try ImageCropper.crop(screens, to: .display(display.id))
+            return CapturedImage(image: try ImageCropper.crop(screens, to: .display(display.id)), scale: display.scale)
         case .region:
             isSelecting = true
             defer { isSelecting = false }
@@ -53,12 +62,12 @@ public final class CaptureWorkflow {
                 logger.info("Selection cancelled")
                 return nil
             }
-            return try ImageCropper.crop(screens, to: selection)
+            let scale = screens.display(withID: selection.displayID)?.scale ?? 1
+            return CapturedImage(image: try ImageCropper.crop(screens, to: selection), scale: scale)
         }
     }
 
-    private func saveLocalCopy(_ image: EncodedImage, capturedAt: Date) async {
-        let preferences = await dependencies.settings.capturePreferences()
+    private func saveLocalCopy(_ image: EncodedImage, capturedAt: Date, preferences: CapturePreferences) async {
         guard preferences.saveLocally else { return }
         do {
             try await Self.save(image, capturedAt: capturedAt, in: preferences.folder, with: dependencies.saver)
@@ -67,7 +76,7 @@ public final class CaptureWorkflow {
         }
     }
 
-    private func uploadAndCopyLink(_ image: EncodedImage) async {
+    func uploadAndCopyLink(_ image: EncodedImage) async {
         do {
             guard let settings = try await dependencies.settings.storageSettings() else {
                 logger.info("Storage is not configured; copying the image instead")

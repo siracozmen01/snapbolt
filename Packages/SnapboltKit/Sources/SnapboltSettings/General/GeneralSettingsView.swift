@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The General tab: local copies and launch at login.
+/// The General tab: local copies, the editor and launch at login.
 public struct GeneralSettingsView: View {
     @Bindable private var model: GeneralSettingsModel
     @State private var isChoosingFolder = false
@@ -22,6 +22,9 @@ public struct GeneralSettingsView: View {
                     }
                 }
                 .disabled(!model.saveLocally)
+            }
+            Section("Editor") {
+                Toggle("Open the editor after each capture", isOn: $model.opensEditor)
             }
             Section("Startup") {
                 Toggle(

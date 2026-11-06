@@ -19,7 +19,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 capture: { [weak self] in self?.capture($0) },
                 copyLink: { environment.clipboard.writeURL($0) },
                 openCapturesFolder: { [weak self] in self?.openCapturesFolder() },
-                openSettings: { [weak self] in self?.showSettings(tab: .storage) }
+                openSettings: { [weak self] in self?.showSettings(tab: .storage) },
+                isEditorEnabled: { environment.generalSettings.opensEditor },
+                toggleEditor: { environment.generalSettings.opensEditor.toggle() }
             )
         )
         let hotkeys = HotkeyRegistry { [weak self] in self?.capture($0) }

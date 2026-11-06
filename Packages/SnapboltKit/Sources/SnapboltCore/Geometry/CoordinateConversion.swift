@@ -45,4 +45,10 @@ public enum CoordinateConversion {
             y: ((frame.maxY - point.y) * display.scale).rounded(.down)
         )
     }
+
+    /// Flips a rect between top-down (origin top-left, y down) and bottom-up (origin bottom-left, y up)
+    /// coordinates of an image `imageHeight` pixels tall. The conversion is its own inverse.
+    public static func bottomUpRect(fromTopDownRect rect: CGRect, imageHeight: CGFloat) -> CGRect {
+        CGRect(x: rect.minX, y: imageHeight - rect.maxY, width: rect.width, height: rect.height)
+    }
 }
